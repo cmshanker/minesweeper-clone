@@ -1,11 +1,12 @@
 extends TileMapLayer
 
-@export var columns = 9
 @export var rows = 9
+@export var columns = 9
 @export var mine_count = 10
 @export var mine_locations = []
 
 @onready var mine_grid: TileMapLayer = $"."
+@onready var first_click: bool = true
 
 const CELLS = {
 	'SQUARE': Vector2i(0, 0),
@@ -28,40 +29,65 @@ const CELLS = {
 const TILE_SET_ID = 1
 
 func _ready():
-	# set the initial mines in the grid
-	set_initial_mines()
 	# set all cells in grid to the non-pressed square tile
 	for i in rows:
 		for j in columns:
 			var cell_coord = Vector2i(i, j)
 			set_tile_cell(cell_coord, 'SQUARE')
-			
+
 func _input(event: InputEvent):
+	
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			print("Left button was clicked at ", event.position)
-			print("Cell position click is ", mine_grid.local_to_map(event.position))
+			var click_location = mine_grid.local_to_map(event.position)
+			# set the initial mines in the grid on the first click
+			if first_click:
+				first_click = false
+				set_initial_mines(click_location)
+				var neighboring_cells = get_neighbors(click_location)
+				for cell in neighboring_cells:
+					var neighboring_mines = check_neighboring_mines(cell)
+					match neighboring_mines:
+						0:
+							set_tile_cell(cell, 'PRESSED')
+						_:
+							set_tile_cell(cell, '%s' % neighboring_mines)
+				
 
-			
+# sets a cell to a particular cell type
 func set_tile_cell(cell_coord: Vector2i, cell_type: String):
 	set_cell(cell_coord, TILE_SET_ID, CELLS[cell_type])
-	
-func set_initial_mines():
+
+# helper function to get the 3x3 area around a cell, excluding any that are
+# outside of the bounds of the grid
+func get_neighbors(loc: Vector2i) -> Array[Vector2i]:
+
+	var neighboring_cells: Array[Vector2i] = []
+	for i in range(loc[0] - 1, loc[0] + 2):
+		for j in range(loc[1] - 1, loc[1] + 2):
+			if i >= 0 && j >= 0 && i < rows && j < columns:
+				neighboring_cells.push_back(Vector2i(i, j))
+
+	return neighboring_cells
+
+# sets the initial locations of the mines in the grid
+func set_initial_mines(first_click_loc: Vector2i):
+	# we don't want to place any mines in the 3x3 area around the first click
+	var neighboring_cells = get_neighbors(first_click_loc)
 	while mine_locations.size() < mine_count:
 		var new_mine_location = Vector2i(randi() % rows, randi() % columns)
-		if mine_locations.find(new_mine_location) == -1:
+		if neighboring_cells.find(new_mine_location) == -1 && \
+			mine_locations.find(new_mine_location) == -1:
 			mine_locations.push_back(new_mine_location)
-			
+
+# returns the amound of neighboring mines to the location clicked		
 func check_neighboring_mines(loc: Vector2i) -> int:
-	var neighbors = 0
-	for i in range(loc[0] - 1, loc[0] + 2):
-		if i < 0 || i >= rows:
-			continue
-		for j in range(loc[1] - 1, loc[1] + 2):
-			if j < 0 || j >= columns || (i == loc[0] && j == loc[1]):
-				continue
-			if mine_locations.find(Vector2i(i, j)) != -1:
-				neighbors = neighbors + 1
-			
-	return neighbors
 	
+	var neighboring_cells = get_neighbors(loc)
+	var neighboring_mines = 0
+	
+	for cell in neighboring_cells:
+		if mine_locations.find(cell) != -1:
+			neighboring_mines = neighboring_mines + 1
+			
+	return neighboring_mines

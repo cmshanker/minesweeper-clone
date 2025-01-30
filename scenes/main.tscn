@@ -5,6 +5,6 @@
 [node name="Main" type="Node"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(400, 300)
+position = Vector2(72, 72)
 
 [node name="Gameboard" parent="." instance=ExtResource("1_wmejo")]
