@@ -28,33 +28,7 @@ const CELLS = {
 }
 const TILE_SET_ID = 1
 
-func _ready():
-	# set all cells in grid to the non-pressed square tile
-	for i in rows:
-		for j in columns:
-			var cell_coord = Vector2i(i, j)
-			set_tile_cell(cell_coord, 'SQUARE')
-
-func _input(event: InputEvent):
-	
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			var click_location = mine_grid.local_to_map(event.position)
-			# set the initial mines in the grid on the first click
-			if first_click:
-				first_click = false
-				set_initial_mines(click_location)
-				var neighboring_cells = get_neighbors(click_location)
-				for cell in neighboring_cells:
-					var neighboring_mines = check_neighboring_mines(cell)
-					match neighboring_mines:
-						0:
-							set_tile_cell(cell, 'PRESSED')
-						_:
-							set_tile_cell(cell, '%s' % neighboring_mines)
-				
-
-# sets a cell to a particular cell type
+# helper function to set a cell to a particular cell type
 func set_tile_cell(cell_coord: Vector2i, cell_type: String):
 	set_cell(cell_coord, TILE_SET_ID, CELLS[cell_type])
 
@@ -69,6 +43,42 @@ func get_neighbors(loc: Vector2i) -> Array[Vector2i]:
 				neighboring_cells.push_back(Vector2i(i, j))
 
 	return neighboring_cells
+
+func _ready():
+	# set all cells in grid to the non-pressed square tile
+	for i in rows:
+		for j in columns:
+			var cell_coord = Vector2i(i, j)
+			set_tile_cell(cell_coord, 'SQUARE')
+
+func _input(event: InputEvent):
+	
+	if event is InputEventMouseButton:
+		var click_location = mine_grid.local_to_map(event.position)
+		if event.button_index == MOUSE_BUTTON_LEFT && event.pressed:
+			handle_left_click(click_location)
+				
+		if event.button_index == MOUSE_BUTTON_RIGHT && \
+			event.pressed && \
+			!first_click:
+			handle_right_click(click_location)
+				
+func handle_left_click(loc: Vector2i) -> void:
+	# set the initial mines in the grid on the first click
+	if first_click:
+		first_click = false
+		set_initial_mines(loc)
+		var neighboring_cells = get_neighbors(loc)
+		for cell in neighboring_cells:
+			var neighboring_mines = check_neighboring_mines(cell)
+			match neighboring_mines:
+				0:
+					set_tile_cell(cell, 'PRESSED')
+				_:
+					set_tile_cell(cell, '%s' % neighboring_mines)
+					
+func handle_right_click(loc: Vector2i) -> void:
+	print(loc)
 
 # sets the initial locations of the mines in the grid
 func set_initial_mines(first_click_loc: Vector2i):
