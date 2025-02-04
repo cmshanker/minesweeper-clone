@@ -1,0 +1,103 @@
+[gd_scene load_steps=9 format=3 uid="uid://d35fuh3w0n4b0"]
+
+[ext_resource type="FontFile" uid="uid://b5cs50vqe6t7m" path="res://assets/fonts/DS-DIGIB.TTF" id="1_27e2v"]
+[ext_resource type="Script" path="res://scripts/ui.gd" id="1_ts48q"]
+[ext_resource type="Texture2D" uid="uid://dv8qfkdwuurtn" path="res://assets/sprites/smile-sprites.png" id="2_2npj2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q3yqn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h324k"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ij4w5"]
+texture = ExtResource("2_2npj2")
+separation = Vector2i(1, 0)
+texture_region_size = Vector2i(24, 24)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_ioxq4"]
+sources/0 = SubResource("TileSetAtlasSource_ij4w5")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2d77x"]
+bg_color = Color(0, 0, 0, 1)
+
+[node name="UI" type="CanvasLayer"]
+script = ExtResource("1_ts48q")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(0, 40)
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_q3yqn")
+
+[node name="GameStatusPanel" type="HBoxContainer" parent="PanelContainer"]
+custom_minimum_size = Vector2(144, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="MineCountPanel" type="Panel" parent="PanelContainer/GameStatusPanel"]
+custom_minimum_size = Vector2(40, 20)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_h324k")
+
+[node name="MineCountLabel" type="Label" parent="PanelContainer/GameStatusPanel/MineCountPanel"]
+unique_name_in_owner = true
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_27e2v")
+theme_override_font_sizes/font_size = 25
+text = "100"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GameStatusButton" type="TileMapLayer" parent="PanelContainer/GameStatusPanel"]
+texture_filter = 1
+tile_set = SubResource("TileSet_ioxq4")
+
+[node name="TimerPanel" type="Panel" parent="PanelContainer/GameStatusPanel"]
+custom_minimum_size = Vector2(40, 30)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_2d77x")
+
+[node name="TimerLabel" type="Label" parent="PanelContainer/GameStatusPanel/TimerPanel"]
+unique_name_in_owner = true
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_27e2v")
+theme_override_font_sizes/font_size = 25
+text = "000"
+horizontal_alignment = 1
+vertical_alignment = 1

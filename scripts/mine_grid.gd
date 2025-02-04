@@ -1,32 +1,41 @@
 extends TileMapLayer
 
+class_name MineGrid
+
 @export var rows: int = 9
 @export var columns: int = 9
-@export var mine_count: int = 10
-@export var mine_locations: Array[Vector2i] = []
+var mine_count: int = 10
+var mine_locations: Array[Vector2i] = []
 
 @onready var mine_grid: TileMapLayer = $"."
-@onready var first_click: bool = true
-@onready var visited_cells: Array[Vector2i] = []
+var safe_cell_count: int = (rows * columns) - mine_count
+var visited_cells: Array[Vector2i] = []
+var flag_count: int = 0
+var game_finished: bool = false
+var first_click: bool = true
+
+signal flag_count_change(flag_count)
+signal game_lost
+signal game_won
 
 # dictionary mapping cell tile types to their atlas coords in the tilemap
 const CELLS = {
-	'SQUARE': Vector2i(0, 0),
-	'PRESSED': Vector2i(1, 0),
-	'FLAG': Vector2i(2, 0),
-	'QUESTION': Vector2i(3, 0),
-	'QUESTION_PRESSED': Vector2i(4, 0),
-	'MINE': Vector2i(5, 0),
-	'MINE_PRESSED': Vector2i(6, 0),
-	'MINE_CROSSED': Vector2i(7, 0),
-	'1': Vector2i(0, 1),
-	'2': Vector2i(1, 1),
-	'3': Vector2i(2, 1),
-	'4': Vector2i(3, 1),
-	'5': Vector2i(4, 1),
-	'6': Vector2i(5, 1),
-	'7': Vector2i(6, 1),
-	'8': Vector2i(7, 1),
+	"SQUARE": Vector2i(0, 0),
+	"PRESSED": Vector2i(1, 0),
+	"FLAG": Vector2i(2, 0),
+	"QUESTION": Vector2i(3, 0),
+	"QUESTION_PRESSED": Vector2i(4, 0),
+	"MINE": Vector2i(5, 0),
+	"MINE_PRESSED": Vector2i(6, 0),
+	"MINE_CROSSED": Vector2i(7, 0),
+	"1": Vector2i(0, 1),
+	"2": Vector2i(1, 1),
+	"3": Vector2i(2, 1),
+	"4": Vector2i(3, 1),
+	"5": Vector2i(4, 1),
+	"6": Vector2i(5, 1),
+	"7": Vector2i(6, 1),
+	"8": Vector2i(7, 1),
 }
 const TILE_SET_ID: int = 1
 
@@ -37,7 +46,6 @@ func set_tile_cell(cell_coord: Vector2i, cell_type: String) -> void:
 # helper function to get the 3x3 area around a cell, excluding any that are
 # outside of the bounds of the grid and excluding the center
 func get_neighbors(loc: Vector2i) -> Array[Vector2i]:
-
 	var neighboring_cells: Array[Vector2i] = []
 	for i in range(loc[0] - 1, loc[0] + 2):
 		for j in range(loc[1] - 1, loc[1] + 2):
@@ -53,11 +61,11 @@ func _ready() -> void:
 	for i in rows:
 		for j in columns:
 			var cell_coord = Vector2i(i, j)
-			set_tile_cell(cell_coord, 'SQUARE')
+			set_tile_cell(cell_coord, "SQUARE")
 
 func _input(event: InputEvent) -> void:
 	
-	if event is InputEventMouseButton:
+	if !game_finished && event is InputEventMouseButton:
 		var click_location = mine_grid.local_to_map(event.position)
 		if event.button_index == MOUSE_BUTTON_LEFT && event.pressed:
 			handle_left_click(click_location)
@@ -86,17 +94,21 @@ func handle_right_click(loc: Vector2i) -> void:
 	# if right click on flag, set back to uncleared square
 	# otherwise do nothing
 	if mine_grid.get_cell_atlas_coords(loc) == Vector2i(0, 0):
-		set_tile_cell(loc, 'FLAG')
+		set_tile_cell(loc, "FLAG")
+		flag_count += 1
 	elif mine_grid.get_cell_atlas_coords(loc) == Vector2i(2, 0):
-		set_tile_cell(loc, 'SQUARE')
+		set_tile_cell(loc, "SQUARE")
+		flag_count -= 1
+	flag_count_change.emit(flag_count)
 
 # sets the initial locations of the mines in the grid
 func set_initial_mines(first_click_loc: Vector2i) -> void:
-	# we don't want to place any mines in the 3x3 area around the first click
+	# we don"t want to place any mines in the 3x3 area around the first click
 	var neighboring_cells = get_neighbors(first_click_loc)
 	while mine_locations.size() < mine_count:
 		var new_mine_location = Vector2i(randi() % rows, randi() % columns)
 		if neighboring_cells.find(new_mine_location) == -1 && \
+			new_mine_location != first_click_loc && \
 			mine_locations.find(new_mine_location) == -1:
 			mine_locations.push_back(new_mine_location)
 			
@@ -106,20 +118,27 @@ func clear_cells(loc: Vector2i) -> void:
 	visited_cells.push_back(loc)
 	var neighboring_mines = check_neighboring_mines(loc)
 	if neighboring_mines == 0:
-		set_tile_cell(loc, 'PRESSED')
+		set_tile_cell(loc, "PRESSED")
 		var neighboring_cells = get_neighbors(loc)
 		for cell in neighboring_cells:
 			if visited_cells.find(cell) == -1:
 				clear_cells(cell)
 	else:
-		set_tile_cell(loc, '%s' % neighboring_mines)
+		set_tile_cell(loc, "%s" % neighboring_mines)
+
+	# victory condition is when we've cleared every safe cell in the grid
+	if visited_cells.size() == safe_cell_count:
+		game_finished = true
+		game_won.emit()
 		
 # end the current game if a user clicks on a mine		
 func click_mine(loc: Vector2i) -> void:
-	set_tile_cell(loc, 'MINE_PRESSED')
+	set_tile_cell(loc, "MINE_PRESSED")
 	for mine in mine_locations:
 		if mine != loc:
-			set_tile_cell(mine, 'MINE')
+			set_tile_cell(mine, "MINE")
+	game_finished = true
+	game_lost.emit()
 
 # returns the amound of neighboring mines to the location clicked		
 func check_neighboring_mines(loc: Vector2i) -> int:
@@ -129,6 +148,6 @@ func check_neighboring_mines(loc: Vector2i) -> int:
 	
 	for cell in neighboring_cells:
 		if mine_locations.find(cell) != -1:
-			neighboring_mines = neighboring_mines + 1
+			neighboring_mines += 1
 			
 	return neighboring_mines
