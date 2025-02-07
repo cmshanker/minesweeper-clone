@@ -1,28 +1,15 @@
-[gd_scene load_steps=9 format=3 uid="uid://d35fuh3w0n4b0"]
+[gd_scene load_steps=8 format=3 uid="uid://d35fuh3w0n4b0"]
 
 [ext_resource type="FontFile" uid="uid://b5cs50vqe6t7m" path="res://assets/fonts/DS-DIGIB.TTF" id="1_27e2v"]
 [ext_resource type="Script" path="res://scripts/ui.gd" id="1_ts48q"]
-[ext_resource type="Texture2D" uid="uid://dv8qfkdwuurtn" path="res://assets/sprites/smile-sprites.png" id="2_2npj2"]
+[ext_resource type="Texture2D" uid="uid://b0uejt2pepvwj" path="res://assets/sprites/smile.png" id="3_61tuu"]
+[ext_resource type="Texture2D" uid="uid://cvs7j2pwan7wk" path="res://assets/sprites/smile_pressed.png" id="4_ubgd0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q3yqn"]
+bg_color = Color(0.752941, 0.752941, 0.752941, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h324k"]
 bg_color = Color(0, 0, 0, 1)
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ij4w5"]
-texture = ExtResource("2_2npj2")
-separation = Vector2i(1, 0)
-texture_region_size = Vector2i(24, 24)
-0:0/0 = 0
-1:0/0 = 0
-2:0/0 = 0
-3:0/0 = 0
-4:0/0 = 0
-5:0/0 = 0
-6:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_ioxq4"]
-sources/0 = SubResource("TileSetAtlasSource_ij4w5")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2d77x"]
 bg_color = Color(0, 0, 0, 1)
@@ -31,18 +18,22 @@ bg_color = Color(0, 0, 0, 1)
 script = ExtResource("1_ts48q")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(144, 40)
 anchors_preset = 10
 anchor_right = 1.0
+offset_bottom = 40.0
 grow_horizontal = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_q3yqn")
 
 [node name="GameStatusPanel" type="HBoxContainer" parent="PanelContainer"]
 custom_minimum_size = Vector2(144, 0)
 layout_mode = 2
-size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
+
+[node name="Spacer1" type="Control" parent="PanelContainer/GameStatusPanel"]
+custom_minimum_size = Vector2(5, 0)
+layout_mode = 2
 
 [node name="MineCountPanel" type="Panel" parent="PanelContainer/GameStatusPanel"]
 custom_minimum_size = Vector2(40, 20)
@@ -71,9 +62,19 @@ text = "100"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="GameStatusButton" type="TileMapLayer" parent="PanelContainer/GameStatusPanel"]
-texture_filter = 1
-tile_set = SubResource("TileSet_ioxq4")
+[node name="Spacer2" type="Control" parent="PanelContainer/GameStatusPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextureButton" type="TextureButton" parent="PanelContainer/GameStatusPanel"]
+layout_mode = 2
+size_flags_vertical = 4
+texture_normal = ExtResource("3_61tuu")
+texture_pressed = ExtResource("4_ubgd0")
+
+[node name="Spacer3" type="Control" parent="PanelContainer/GameStatusPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="TimerPanel" type="Panel" parent="PanelContainer/GameStatusPanel"]
 custom_minimum_size = Vector2(40, 30)
@@ -101,3 +102,7 @@ theme_override_font_sizes/font_size = 25
 text = "000"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Spacer4" type="Control" parent="PanelContainer/GameStatusPanel"]
+custom_minimum_size = Vector2(5, 0)
+layout_mode = 2

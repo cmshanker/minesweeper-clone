@@ -1,10 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://bjd3jwfsipu5v"]
+[gd_scene load_steps=3 format=3 uid="uid://bjd3jwfsipu5v"]
 
+[ext_resource type="PackedScene" uid="uid://d35fuh3w0n4b0" path="res://scenes/ui.tscn" id="1_i82hf"]
 [ext_resource type="PackedScene" uid="uid://dc6jo2pn2fc1i" path="res://scenes/gameboard.tscn" id="1_wmejo"]
 
 [node name="Main" type="Node"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(72, 72)
+position = Vector2(72, 92)
+
+[node name="UI" parent="." instance=ExtResource("1_i82hf")]
 
 [node name="Gameboard" parent="." instance=ExtResource("1_wmejo")]
+position = Vector2(0, 40)
