@@ -2,12 +2,12 @@ extends TileMapLayer
 
 class_name MineGrid
 
+@onready var mine_grid: TileMapLayer = $"."
 @export var rows: int = 9
 @export var columns: int = 9
+
 var mine_count: int = 10
 var mine_locations: Array[Vector2i] = []
-
-@onready var mine_grid: TileMapLayer = $"."
 var safe_cell_count: int = (rows * columns) - mine_count
 var visited_cells: Array[Vector2i] = []
 var flag_count: int = 0
@@ -18,7 +18,8 @@ signal game_start
 signal game_lost
 signal game_won
 signal flag_count_change(flag_count)
-
+signal lmouse_pressed
+signal lmouse_released
 
 # dictionary mapping cell tile types to their atlas coords in the tilemap
 const CELLS = {
@@ -68,9 +69,16 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	
 	if !game_finished && event is InputEventMouseButton:
-		var click_location = mine_grid.local_to_map(event.position)
-		if event.button_index == MOUSE_BUTTON_LEFT && event.pressed:
-			handle_left_click(click_location)
+		var loc = event.position
+		# subtract 40 to compensate for height of timer UI
+		var transformed_position = Vector2i(loc[0], loc[1] - 40)
+		var click_location = mine_grid.local_to_map(transformed_position)
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				lmouse_pressed.emit()
+			else:
+				lmouse_released.emit()
+				handle_left_click(click_location)
 				
 		if event.button_index == MOUSE_BUTTON_RIGHT && \
 			event.pressed && \

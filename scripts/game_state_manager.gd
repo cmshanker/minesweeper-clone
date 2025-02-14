@@ -14,8 +14,8 @@ func _ready() -> void:
 	mine_grid.game_won.connect(on_game_won)
 	mine_grid.game_lost.connect(on_game_lost)
 	mine_grid.flag_count_change.connect(on_flag_count_change)
-	
-	ui.handle_mine_count_change(mine_grid.mine_count)
+	mine_grid.lmouse_pressed.connect(on_lmouse_pressed)
+	mine_grid.lmouse_released.connect(on_lmouse_released)
 	
 func on_game_start() -> void:
 	timer.start()
@@ -32,6 +32,12 @@ func on_game_lost() -> void:
 
 func on_flag_count_change(flag_count: int) -> void:
 	ui.handle_mine_count_change(mine_grid.mine_count - flag_count)
+	
+func on_lmouse_pressed() -> void:
+	ui.on_lmouse_pressed()
+	
+func on_lmouse_released() -> void:
+	ui.on_lmouse_released()
 
 func _on_timer_timeout() -> void:
 	time_elapsed += 1
