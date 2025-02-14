@@ -1,14 +1,56 @@
-[gd_scene load_steps=3 format=3 uid="uid://bjd3jwfsipu5v"]
+[gd_scene load_steps=9 format=3 uid="uid://bjd3jwfsipu5v"]
 
 [ext_resource type="PackedScene" uid="uid://d35fuh3w0n4b0" path="res://scenes/ui.tscn" id="1_i82hf"]
-[ext_resource type="PackedScene" uid="uid://dc6jo2pn2fc1i" path="res://scenes/gameboard.tscn" id="1_wmejo"]
+[ext_resource type="PackedScene" uid="uid://c87csxhm5740t" path="res://scenes/game_state_manager.tscn" id="1_jq3ra"]
+[ext_resource type="Texture2D" uid="uid://cvxv5k10s8lt4" path="res://assets/sprites/squares-sprites.png" id="1_x637p"]
+[ext_resource type="Texture2D" uid="uid://dv8qfkdwuurtn" path="res://assets/sprites/smile-sprites.png" id="2_ckxjl"]
+[ext_resource type="Script" path="res://scripts/mine_grid.gd" id="3_a5kma"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_r2d62"]
+texture = ExtResource("1_x637p")
+separation = Vector2i(1, 1)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_47u7x"]
+texture = ExtResource("2_ckxjl")
+separation = Vector2i(1, 0)
+texture_region_size = Vector2i(24, 24)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_8lia3"]
+sources/1 = SubResource("TileSetAtlasSource_r2d62")
+sources/2 = SubResource("TileSetAtlasSource_47u7x")
 
 [node name="Main" type="Node"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(72, 92)
 
-[node name="UI" parent="." instance=ExtResource("1_i82hf")]
+[node name="GameStateManager" parent="." node_paths=PackedStringArray("mine_grid", "ui") instance=ExtResource("1_jq3ra")]
+mine_grid = NodePath("../MineGrid")
+ui = NodePath("../UI")
 
-[node name="Gameboard" parent="." instance=ExtResource("1_wmejo")]
-position = Vector2(0, 40)
+[node name="MineGrid" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_8lia3")
+script = ExtResource("3_a5kma")
+
+[node name="UI" parent="." instance=ExtResource("1_i82hf")]

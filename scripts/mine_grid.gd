@@ -14,9 +14,11 @@ var flag_count: int = 0
 var game_finished: bool = false
 var first_click: bool = true
 
-signal flag_count_change(flag_count)
+signal game_start
 signal game_lost
 signal game_won
+signal flag_count_change(flag_count)
+
 
 # dictionary mapping cell tile types to their atlas coords in the tilemap
 const CELLS = {
@@ -78,6 +80,7 @@ func _input(event: InputEvent) -> void:
 func handle_left_click(loc: Vector2i) -> void:
 	# set the initial mines in the grid on the first click
 	if first_click:
+		game_start.emit()
 		first_click = false
 		set_initial_mines(loc)
 	

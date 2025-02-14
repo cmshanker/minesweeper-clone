@@ -66,7 +66,8 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="TextureButton" type="TextureButton" parent="PanelContainer/GameStatusPanel"]
+[node name="StatusButton" type="TextureButton" parent="PanelContainer/GameStatusPanel"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 texture_normal = ExtResource("3_61tuu")
@@ -106,3 +107,5 @@ vertical_alignment = 1
 [node name="Spacer4" type="Control" parent="PanelContainer/GameStatusPanel"]
 custom_minimum_size = Vector2(5, 0)
 layout_mode = 2
+
+[connection signal="pressed" from="PanelContainer/GameStatusPanel/StatusButton" to="." method="_on_status_button_pressed"]
