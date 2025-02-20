@@ -1,12 +1,35 @@
-[gd_scene load_steps=8 format=3 uid="uid://d35fuh3w0n4b0"]
+[gd_scene load_steps=15 format=3 uid="uid://d35fuh3w0n4b0"]
 
 [ext_resource type="FontFile" uid="uid://b5cs50vqe6t7m" path="res://assets/fonts/DS-DIGIB.TTF" id="1_27e2v"]
 [ext_resource type="Script" path="res://scripts/ui.gd" id="1_ts48q"]
+[ext_resource type="Texture2D" uid="uid://owl2vurci5fa" path="res://assets/sprites/border.png" id="2_rvqva"]
 [ext_resource type="Texture2D" uid="uid://b0uejt2pepvwj" path="res://assets/sprites/smile.png" id="3_61tuu"]
+[ext_resource type="FontFile" uid="uid://ih8mhbglo8t8" path="res://assets/fonts/W95FA.otf" id="3_aqrnh"]
+[ext_resource type="Texture2D" uid="uid://dlttobyfwon70" path="res://assets/sprites/button_focused.png" id="4_pdw5d"]
 [ext_resource type="Texture2D" uid="uid://cvs7j2pwan7wk" path="res://assets/sprites/smile_pressed.png" id="4_ubgd0"]
+[ext_resource type="Texture2D" uid="uid://dt7c5fcfkdhgp" path="res://assets/sprites/button_pressed.png" id="5_3jxyd"]
+[ext_resource type="Texture2D" uid="uid://mkjswsldto4p" path="res://assets/sprites/button.png" id="6_cc6m7"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q3yqn"]
-bg_color = Color(0.752941, 0.752941, 0.752941, 1)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6yjwn"]
+texture = ExtResource("4_pdw5d")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4iiuw"]
+texture = ExtResource("5_3jxyd")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4il0d"]
+texture = ExtResource("6_cc6m7")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h324k"]
 bg_color = Color(0, 0, 0, 1)
@@ -14,33 +37,82 @@ bg_color = Color(0, 0, 0, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2d77x"]
 bg_color = Color(0, 0, 0, 1)
 
-[node name="UI" type="CanvasLayer"]
+[node name="UI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_ts48q")
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(144, 40)
-anchors_preset = 10
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
-offset_bottom = 40.0
+anchor_bottom = 1.0
 grow_horizontal = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_q3yqn")
+grow_vertical = 2
+color = Color(0.752941, 0.752941, 0.752941, 1)
 
-[node name="GameStatusPanel" type="HBoxContainer" parent="PanelContainer"]
+[node name="GameBorder" type="NinePatchRect" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_rvqva")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameBorder"]
+layout_mode = 2
+offset_right = 144.0
+offset_bottom = 65.0
+
+[node name="TopMargin" type="Control" parent="GameBorder/VBoxContainer"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameBorder/VBoxContainer"]
+custom_minimum_size = Vector2(144, 25)
+layout_mode = 2
+
+[node name="Button" type="Button" parent="GameBorder/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_aqrnh")
+theme_override_font_sizes/font_size = 15
+theme_override_styles/focus = SubResource("StyleBoxTexture_6yjwn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_4iiuw")
+theme_override_styles/normal = SubResource("StyleBoxTexture_4il0d")
+text = "Options"
+
+[node name="Border1" type="ColorRect" parent="GameBorder/VBoxContainer"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[node name="GameStatusPanel" type="HBoxContainer" parent="GameBorder/VBoxContainer"]
 custom_minimum_size = Vector2(144, 0)
 layout_mode = 2
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Spacer1" type="Control" parent="PanelContainer/GameStatusPanel"]
+[node name="Spacer1" type="Control" parent="GameBorder/VBoxContainer/GameStatusPanel"]
 custom_minimum_size = Vector2(5, 0)
 layout_mode = 2
 
-[node name="MineCountPanel" type="Panel" parent="PanelContainer/GameStatusPanel"]
-custom_minimum_size = Vector2(40, 20)
+[node name="MineCountPanel" type="Panel" parent="GameBorder/VBoxContainer/GameStatusPanel"]
+custom_minimum_size = Vector2(40, 15)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_h324k")
 
-[node name="MineCountLabel" type="Label" parent="PanelContainer/GameStatusPanel/MineCountPanel"]
+[node name="MineCountLabel" type="Label" parent="GameBorder/VBoxContainer/GameStatusPanel/MineCountPanel"]
 unique_name_in_owner = true
 texture_filter = 1
 layout_mode = 1
@@ -62,27 +134,27 @@ text = "100"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Spacer2" type="Control" parent="PanelContainer/GameStatusPanel"]
+[node name="Spacer2" type="Control" parent="GameBorder/VBoxContainer/GameStatusPanel"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="StatusButton" type="TextureButton" parent="PanelContainer/GameStatusPanel"]
+[node name="StatusButton" type="TextureButton" parent="GameBorder/VBoxContainer/GameStatusPanel"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 texture_normal = ExtResource("3_61tuu")
 texture_pressed = ExtResource("4_ubgd0")
 
-[node name="Spacer3" type="Control" parent="PanelContainer/GameStatusPanel"]
+[node name="Spacer3" type="Control" parent="GameBorder/VBoxContainer/GameStatusPanel"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="TimerPanel" type="Panel" parent="PanelContainer/GameStatusPanel"]
+[node name="TimerPanel" type="Panel" parent="GameBorder/VBoxContainer/GameStatusPanel"]
 custom_minimum_size = Vector2(40, 30)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_2d77x")
 
-[node name="TimerLabel" type="Label" parent="PanelContainer/GameStatusPanel/TimerPanel"]
+[node name="TimerLabel" type="Label" parent="GameBorder/VBoxContainer/GameStatusPanel/TimerPanel"]
 unique_name_in_owner = true
 texture_filter = 1
 layout_mode = 1
@@ -104,8 +176,13 @@ text = "000"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Spacer4" type="Control" parent="PanelContainer/GameStatusPanel"]
+[node name="Spacer4" type="Control" parent="GameBorder/VBoxContainer/GameStatusPanel"]
 custom_minimum_size = Vector2(5, 0)
 layout_mode = 2
 
-[connection signal="pressed" from="PanelContainer/GameStatusPanel/StatusButton" to="." method="_on_status_button_pressed"]
+[node name="Border2" type="ColorRect" parent="GameBorder/VBoxContainer"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[connection signal="pressed" from="GameBorder/VBoxContainer/GameStatusPanel/StatusButton" to="." method="_on_status_button_pressed"]

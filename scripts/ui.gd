@@ -12,13 +12,16 @@ var surprised_button = preload("res://assets/sprites/smile_surprised.png")
 
 func handle_mine_count_change(mines: int) -> void:
 	var mines_str = str(mines)
-	if mines_str.length() < 3:
-		mines_str = mines_str.lpad(3, "0")
-	elif mines_str.length() > 3:
-		if mines < 0:
-			mines_str = "-99"
-		else:
+	if mines > 0:
+		if mines_str.length() < 3:
+			mines_str = mines_str.lpad(3, "0")
+		elif mines_str.length() > 3:
 			mines_str = "999"
+	else:
+		if mines > -10:
+			mines_str = "-0" + str(-1 * mines)
+		elif mines < -99:
+			mines_str = "-99"
 	mine_count_label.text = mines_str
 	
 func handle_timer_change(time_elapsed: int) -> void:
@@ -30,6 +33,7 @@ func handle_timer_change(time_elapsed: int) -> void:
 	timer_label.text = time_str
 
 func game_won() -> void:
+	handle_mine_count_change(0)
 	status_button.texture_normal = won_button
 	
 func game_lost() -> void:

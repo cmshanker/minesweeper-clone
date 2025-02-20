@@ -14,6 +14,7 @@ var flag_count: int = 0
 var game_finished: bool = false
 var first_click: bool = true
 
+signal init_mine_count(mine_count)
 signal game_start
 signal game_lost
 signal game_won
@@ -65,13 +66,14 @@ func _ready() -> void:
 		for j in columns:
 			var cell_coord = Vector2i(i, j)
 			set_tile_cell(cell_coord, "SQUARE")
+	init_mine_count.emit(mine_count)
 
 func _input(event: InputEvent) -> void:
 	
 	if !game_finished && event is InputEventMouseButton:
 		var loc = event.position
-		# subtract 40 to compensate for height of timer UI
-		var transformed_position = Vector2i(loc[0], loc[1] - 40)
+		# subtract 65 pixels to compensate for height of timer UI
+		var transformed_position = Vector2i(loc[0], loc[1] - 65)
 		var click_location = mine_grid.local_to_map(transformed_position)
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
@@ -139,6 +141,8 @@ func clear_cells(loc: Vector2i) -> void:
 
 	# victory condition is when we've cleared every safe cell in the grid
 	if visited_cells.size() == safe_cell_count:
+		for cell in mine_locations:
+			set_tile_cell(cell, "FLAG")
 		game_finished = true
 		game_won.emit()
 		
